@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+<!-- AI asistent -->
+<script src="https://trixtecheu.github.io/UNICOV/LoadingAnimationExtension.js"></script>
+<script type="module">
+(function(d, t) {
+    const WEBHOOK_URL = 'https://hook.eu2.make.com/d2vdqf58mnmm1gfjv4n8ztqdh3fycy1j';
+
+    function handleLinkClick(e) {
+        const link = e.target.closest('a.markdown-link') || e.target.closest('a[href]');
+        if (!link) return;
+
+        navigator.sendBeacon(WEBHOOK_URL, JSON.stringify({
+            event: 'link_click',
+            url: link.href,
+            text: link.innerText.trim(),
+            timestamp: new Date().toISOString()
+        }));
+    }
+
+    function attachTracker() {
+        // Regulérní DOM
+        document.addEventListener('click', handleLinkClick);
+
+        // Shadow DOM (Voiceflow widget-next ho může používat)
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('*').forEach(el => {
+                if (el.shadowRoot && !el._vfTrackerAttached) {
+                    el.shadowRoot.addEventListener('click', handleLinkClick);
+                    el._vfTrackerAttached = true;
+                }
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    const v = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    v.onload = function() {
+        try {
+            setTimeout(function() {
+                window.voiceflow.chat.load({
+                    verify: {
+                        projectID: '678ccae04e984c4ee9b1d70d'
+                    },
+                    url: 'https://general-runtime.voiceflow.com',
+                    versionID: 'production',
+                    render: {
+                        mode: 'overlay'
+                    },
+                    allowDangerousHTML: true,
+                    assistant: {
+                        extensions: [window.LoadingAnimationExtension],
+                        stylesheet: 'https://trixtecheu.github.io/UNICOV/StylesUnicov.css',
+                    },
+                }).then(() => {
+                    window.voiceflow.chat.proactive.clear();
+                    setTimeout(function() {
+                        window.voiceflow.chat.proactive.push({
+                            type: "text",
+                            payload: {
+                                message: "👋🏻 S čím vám mohu pomoci?"
+                            }
+                        });
+                    }, 2000);
+
+                    attachTracker();
+                });
+            }, 500);
+        } catch (error) {
+            console.error('Error during initialization:', error);
+        }
+    };
+    v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+    v.type = 'text/javascript';
+    s.parentNode.insertBefore(v, s);
+})(document, 'script');
+</script>
+<!-- TRIX @2025 -->
+
+
+  </body>
+</html>
